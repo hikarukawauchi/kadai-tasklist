@@ -1,0 +1,9 @@
+<h1>タスク一覧</h1>
+
+<ul>
+  <% @tasklists.each do |tasklist| %>
+    <li><%= link_to tasklist.id, tasklist %> : <li><%= tasklist.content %></li>
+  <% end %>
+</ul>
+
+<%= link_to '新規メッセージの投稿', new_tasklist_path %>
