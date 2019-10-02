@@ -1,5 +1,22 @@
 <% if logged_in? %>
-  <p>ログイン完了ユーザ: <%= current_user.name %></p>
+  <div class="row">
+    <aside class="col-sm-4">
+      <%= form_with(model: @tasklist, local: true) do |f| %>
+        <div class="form-group">
+          <%= f.label :content, 'Content' %>
+          <%= f.text_area :content, class: 'form-control', rows: 5 %>
+        </div>
+        <div class="form-group">
+          <%= f.label :status, 'Status' %>
+          <%= f.text_area :status, class: 'form-control', rows: 1 %>
+        </div>
+        <%= f.submit 'Post', class: 'btn btn-primary btn-block' %>
+      <% end %>
+    </aside>
+    <div class="col-sm-8">
+      <%= render 'tasklists/tasklists', tasklists: @tasklists %>
+    </div>
+  </div>
 <% else %>
   <div class="center jumbotron">
     <div class="text-center">
@@ -8,15 +25,3 @@
     </div>
   </div>
 <% end %>
-
-
-
-<h1>タスク一覧</h1>
-
-<ul>
-  <% @tasklists.each do |tasklist| %>
-    <li><%= link_to tasklist.id, tasklist %> : <%= tasklist.status %> &gt; <%= tasklist.content %></li>
-  <% end %>
-</ul>
-
-<%= link_to '新規メッセージの投稿', new_tasklist_path %>

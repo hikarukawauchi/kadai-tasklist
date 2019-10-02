@@ -1,0 +1,22 @@
+<ul class="list-unstyled">
+  <% tasklists.each do |tasklist| %>
+    <li class="media mb-3">
+      <img class="mr-2 rounded" src="<%= gravatar_url(tasklist.user, { size: 50 }) %>" alt="">
+      <div class="media-body">
+        <div>
+          <%= link_to tasklist.user.name, user_path(tasklist.user) %> <span class="text-muted">posted at <%= tasklist.created_at %></span>
+        </div>
+        <div>
+          <p class="mb-0"><%= tasklist.content %></p>
+          <p class="mb-0">Status: <%= tasklist.status %></p>
+        </div>
+        <div>
+          <% if current_user == tasklist.user %>
+            <%= link_to "Delete", tasklist, method: :delete, data: { confirm: "You sure?" }, class: 'btn btn-danger btn-sm' %>
+          <% end %>
+        </div>
+      </div>
+    </li>
+  <% end %>
+  <%= paginate tasklists %>
+</ul>

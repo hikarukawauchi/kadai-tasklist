@@ -1,8 +1,13 @@
 class TasklistsController < ApplicationController
+  before_action :require_user_logged_in, only: [:show, :create, :edit, :update, :destroy]
   before_action :set_tasklist, only: [:show, :edit, :update, :destroy]
+  before_action :correct_user, only: [:destroy]
 
   def index
-    @tasklists = Tasklist.all
+    if logged_in?
+      @tasklist = current_user.tasklists.build  # form_with 用
+      @tasklists = current_user.tasklists.order(id: :desc).page(params[:page])
+    end
   end
 
   def show
@@ -13,16 +18,18 @@ class TasklistsController < ApplicationController
   end
 
   def create
-    @tasklist = Tasklist.new(tasklist_params)
-
+    @tasklist = current_user.tasklists.build(tasklist_params)
     if @tasklist.save
-      flash[:success] = 'タスクが正常に投稿されました'
-      redirect_to @tasklist
+      flash[:success] = 'タスクを投稿しました。'
+      redirect_to root_url
     else
-      flash.now[:danger] = 'タスクが投稿されませんでした'
-      render :new
+      @tasklists = current_user.tasklists.order(id: :desc).page(params[:page])
+      flash.now[:danger] = 'タスクの投稿に失敗しました。'
+      render 'tasklists/index'
     end
   end
+
+
 
   def edit
   end
@@ -37,12 +44,11 @@ class TasklistsController < ApplicationController
       render :edit
     end
   end
-
+  
   def destroy
     @tasklist.destroy
-
-    flash[:success] = 'Tasklist は正常に削除されました'
-    redirect_to tasklists_url
+    flash[:success] = 'タスクを削除しました。'
+    redirect_back(fallback_location: root_path)
   end
 
   private
@@ -54,6 +60,13 @@ class TasklistsController < ApplicationController
   # Strong Parameter
   def tasklist_params
     params.require(:tasklist).permit(:content, :status)
+  end
+  
+  def correct_user
+    @tasklist = current_user.tasklists.find_by(id: params[:id])
+    unless @tasklist
+      redirect_to root_url
+    end
   end
   
 end
